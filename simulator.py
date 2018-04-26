@@ -1,4 +1,5 @@
-'''
+"""
+
 CS5250 Assignment 4, Scheduling policies simulator
 Sample skeleton program
 Author: Minh Ho
@@ -16,8 +17,11 @@ Revision 2:
     Change requirement for future_prediction SRTF => future_prediction shortest job first(SJF), the simpler non-preemptive version.
     Let initial guess = 5 time units.
     Thanks Lee Wei Ping for trying and pointing out the difficulty & ambiguity with future_prediction SRTF.
-'''
+
+
+"""
 import sys
+import copy
 
 input_file = 'input.txt'
 
@@ -27,6 +31,7 @@ class Process:
         self.id = id
         self.arrive_time = arrive_time
         self.burst_time = burst_time
+        self.last_scheduled_time=arrive_time
     #for printing purpose
     def __repr__(self):
         return ('[id %d : arrive_time %d,  burst_time %d]'%(self.id, self.arrive_time, self.burst_time))
@@ -45,11 +50,68 @@ def FCFS_scheduling(process_list):
     average_waiting_time = waiting_time/float(len(process_list))
     return schedule, average_waiting_time
 
+def end_simulation_time(process_list):
+    n = len(process_list)
+    prev_process = process_list[n-1]
+    end_time = prev_process.arrive_time + prev_process.burst_time
+    return end_time
+
+def append_schedules(scheduled_process,current_time, process_id):
+    n = len(scheduled_process)
+    if n > 0:
+        last_schedule = scheduled_process[n-1]
+        previous_process = last_schedule[1]
+        if process_id != previous_process:
+            scheduled_process.append((current_time, process_id))
+    else:
+        scheduled_process.append((current_time, process_id))
+
 #Input: process_list, time_quantum (Positive Integer)
 #Output_1 : Schedule list contains pairs of (time_stamp, proccess_id) indicating the time switching to that proccess_id
 #Output_2 : Average Waiting Time
 def RR_scheduling(process_list, time_quantum ):
-    return (["to be completed, scheduling process_list on round robin policy with time_quantum"], 0.0)
+    current_time = 0
+    waiting_time = 0
+    scheduled_process = []
+    current_processing_queue = []
+    end_time = end_simulation_time(process_list)
+    to_be_processed = copy.deepcopy(process_list)
+
+    while current_time < end_time:
+        while to_be_processed.__len__() > 0:
+            tba_process = to_be_processed[0]
+            process_arrival_time = tba_process.arrive_time
+            if process_arrival_time <= current_time+time_quantum:
+                current_processing_queue.append(tba_process)
+                to_be_processed.pop(0)
+            else:
+                break
+
+        if current_processing_queue.__len__() > 0:
+            current_process = current_processing_queue[0]
+            process_arrival_time = current_process.arrive_time
+            if process_arrival_time <= current_time:
+                current_process = current_processing_queue.pop(0)
+                if current_time < current_process.last_scheduled_time:
+                    current_time = current_process.last_scheduled_time
+                waiting_time = waiting_time + (current_time - current_process.last_scheduled_time)
+                append_schedules(scheduled_process, current_time, current_process.id)  # processing
+                if current_process.burst_time > time_quantum:
+                    current_process.burst_time -= time_quantum
+                    current_time += time_quantum
+                    current_process.last_scheduled_time = current_time
+                    current_processing_queue.append(current_process)
+                else:
+                    current_time += current_process.burst_time
+                    current_process.burst_time = 0
+                    current_process.last_scheduled_time = current_time
+            else:
+                current_time += 1
+        else:
+            current_time += 1
+
+    average_waiting_time = waiting_time / float(len(process_list))
+    return scheduled_process, average_waiting_time
 
 def SRTF_scheduling(process_list):
     return (["to be completed, scheduling process_list on SRTF, using process.burst_time to calculate the remaining time of the current process "], 0.0)
@@ -94,4 +156,4 @@ def main(argv):
     write_output('SJF.txt', SJF_schedule, SJF_avg_waiting_time )
 
 if __name__ == '__main__':
-main(sys.argv[1:])
+    main(sys.argv[1:])
