@@ -55,8 +55,8 @@ def FCFS_scheduling(process_list):
 #Output_2 : Average Waiting Time
 def end_simulation_time(process_list):
     n = len(process_list)
-    prev_process = process_list[n-1]
-    end_time = prev_process.arrive_time + prev_process.burst_time
+    last_process = process_list[n-1]
+    end_time = last_process.arrive_time + last_process.burst_time
     return end_time
 
 def append_schedules(scheduled_process,current_time, process_id):
@@ -224,13 +224,13 @@ def main(argv):
     FCFS_schedule, FCFS_avg_waiting_time =  FCFS_scheduling(process_list)
     write_output('FCFS.txt', FCFS_schedule, FCFS_avg_waiting_time )
     print ("simulating RR ----")
-    RR_schedule, RR_avg_waiting_time =  RR_scheduling(process_list,time_quantum = 2)
+    RR_schedule, RR_avg_waiting_time =  RR_scheduling(process_list,time_quantum = 5)
     write_output('RR.txt', RR_schedule, RR_avg_waiting_time )
     print ("simulating SRTF ----")
     SRTF_schedule, SRTF_avg_waiting_time =  SRTF_scheduling(process_list)
     write_output('SRTF.txt', SRTF_schedule, SRTF_avg_waiting_time )
     print ("simulating SJF ----")
-    SJF_schedule, SJF_avg_waiting_time =  SJF_scheduling(process_list, alpha = 0.5)
+    SJF_schedule, SJF_avg_waiting_time =  SJF_scheduling(process_list, alpha = 0.3)
     write_output('SJF.txt', SJF_schedule, SJF_avg_waiting_time )
 
 if __name__ == '__main__':
