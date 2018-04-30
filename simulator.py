@@ -57,7 +57,7 @@ def end_simulation_time(process_list):
     n = len(process_list)
     last_process = process_list[n-1]
     end_time = last_process.arrive_time + last_process.burst_time
-    return end_time
+    return end_time+20
 
 def append_schedules(scheduled_process,current_time, process_id):
     n = len(scheduled_process)
@@ -76,7 +76,6 @@ def RR_scheduling(process_list, time_quantum ):
     current_processing_queue = []
     end_time = end_simulation_time(process_list)
     to_be_processed = copy.deepcopy(process_list)
-
     while current_time < end_time:
         while to_be_processed.__len__() > 0:
             tba_process = to_be_processed[0]
@@ -224,13 +223,13 @@ def main(argv):
     FCFS_schedule, FCFS_avg_waiting_time =  FCFS_scheduling(process_list)
     write_output('FCFS.txt', FCFS_schedule, FCFS_avg_waiting_time )
     print ("simulating RR ----")
-    RR_schedule, RR_avg_waiting_time =  RR_scheduling(process_list,time_quantum = 5)
+    RR_schedule, RR_avg_waiting_time =  RR_scheduling(process_list,time_quantum = 2)
     write_output('RR.txt', RR_schedule, RR_avg_waiting_time )
     print ("simulating SRTF ----")
     SRTF_schedule, SRTF_avg_waiting_time =  SRTF_scheduling(process_list)
     write_output('SRTF.txt', SRTF_schedule, SRTF_avg_waiting_time )
     print ("simulating SJF ----")
-    SJF_schedule, SJF_avg_waiting_time =  SJF_scheduling(process_list, alpha = 0.3)
+    SJF_schedule, SJF_avg_waiting_time =  SJF_scheduling(process_list, alpha = 0.5)
     write_output('SJF.txt', SJF_schedule, SJF_avg_waiting_time )
 
 if __name__ == '__main__':
